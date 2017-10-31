@@ -1,6 +1,6 @@
-\name{mcnnm-package}
-\alias{mcnnm-package}
-\alias{mcnnm}
+\name{MCPanel-package}
+\alias{MCPanel-package}
+\alias{MCPanel}
 \docType{package}
 \title{
   This package performs matrix completion via nuclear norm minimization.
