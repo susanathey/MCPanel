@@ -45,14 +45,15 @@ my_synth <- function(A, b, niter, rel_tol){
     if( rel_imp <= 0 ){
       alpha <- 0.95 * alpha
     } else{
-      w <- w_np;
-      obj_val <- obj_val_n;
+      w <- w_np
+      obj_val <- obj_val_n
     }
     if( (rel_imp > 0) && (rel_imp < rel_tol) ){
-      w = w_np;
-      break;
+      w = w_np
+      break
     }
   }
+  return(w_np)
 }
 
 mirror_dec <- function(v, alpha, grad){
