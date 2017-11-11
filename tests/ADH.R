@@ -1,4 +1,4 @@
-adh_mp_rows <- function(M, mask, niter = 20000, rel_tol=1e-10){
+adh_mp_rows <- function(M, mask, niter = 10000, rel_tol=1e-8){
   M <- M * mask
   treated_rows <- which(rowMeans(mask) < 1)
   control_rows <- setdiff(1:nrow(M), treated_rows)
@@ -12,7 +12,7 @@ adh_mp_rows <- function(M, mask, niter = 20000, rel_tol=1e-10){
     A <- t(M[control_rows, -tr_row_miss])
     b <- matrix(M[tr_row_pred, -tr_row_miss], , 1)
     if(num_treated > 50){
-      niter <- 1000
+      niter <- 200
     }
     W <- my_synth(A, b, niter, rel_tol)
     M_pred_this_row <- t(M[control_rows,]) %*% W
@@ -42,17 +42,22 @@ my_synth <- function(A, b, niter, rel_tol){
     w_np <- mirror_dec(w,step_size,grad)
     obj_val_n <- t(w_np) %*% J %*% w_np - 2* t(w_np) %*% g + t(b) %*% b
     rel_imp = (obj_val-obj_val_n)/obj_val
+    if(obj_val_n < 1e-14){
+      w <- w_np
+      break
+    }
     if( rel_imp <= 0 ){
       alpha <- 0.95 * alpha
     } else{
-      w <- w_np;
-      obj_val <- obj_val_n;
+      w <- w_np
+      obj_val <- obj_val_n
     }
     if( (rel_imp > 0) && (rel_imp < rel_tol) ){
-      w = w_np;
-      break;
+      w = w_np
+      break
     }
   }
+  return(w)
 }
 
 mirror_dec <- function(v, alpha, grad){

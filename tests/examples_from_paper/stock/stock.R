@@ -1,7 +1,7 @@
 rm(list=ls())
 
 ## Loading Source files
-setwd("/Users/khosravi/atom/matrix_completion/MCPanel/tests/") ## Change it to your local directory
+setwd("/Users/khosravi/atom/OnlinePackage/MCPanel/tests/") ## Change it to your local directory
 
 source("EN.R")
 source("DID.R")
@@ -13,8 +13,8 @@ library(glmnet)
 library(ggplot2)
 
 ## Reading data
-
-Y <- t(read.csv('./examples_from_paper/stock/returns_no_missing.csv',header=F))
+setwd("./examples_from_paper/stock/")
+Y <- t(read.csv('./returns_no_missing.csv',header=F))
 
 #save(list=c("Y"),file="stocks.RData") # It is better to save data for faster loading
 #load(file="stocks.RData") 
@@ -28,9 +28,8 @@ number_T0 = 2
 T0 <- ceiling(T*((1:number_T0)*2-1)/(2*number_T0))
 N_t <- ceiling(N/2)
 num_runs <- 5
-to_run_adh <- 1
 is_simul <- 0 ## Whether to simulate Simultaneus Adoption or Staggered Adoption
-is_save <- 0 ## Whether to save the plot or not
+to_save <- 1
 
 ## Matrices for saving RMSE values
 
@@ -38,9 +37,7 @@ MCPanel_RMSE_test <- matrix(0L,num_runs,length(T0))
 EN_RMSE_test <- matrix(0L,num_runs,length(T0))
 ENT_RMSE_test <- matrix(0L,num_runs,length(T0))
 DID_RMSE_test <- matrix(0L,num_runs,length(T0))
-if(to_run_adh == 1){
-  ADH_RMSE_test <- matrix(0L,num_runs,length(T0))
-}
+ADH_RMSE_test <- matrix(0L,num_runs,length(T0))
 
 ## Run different methods
 
@@ -61,19 +58,22 @@ for(i in c(1:num_runs)){
       treat_mat <- stag_adapt(Y_sub, N_t, t0, treat_indices)
     }
     Y_obs <- Y_sub * treat_mat
+    
     ## ------
     ## MC-NNM
     ## ------
+    print("MCNNM Started")
     est_model_MCPanel <- mcnnm_cv(Y_obs, treat_mat, to_estimate_u = 1, to_estimate_v = 1) ## If N<<T it is better to only estimate u, if T<<<N it is better to only estimate v.
     est_model_MCPanel$Mhat <- est_model_MCPanel$L + replicate(T,est_model_MCPanel$u) + t(replicate(N,est_model_MCPanel$v))
     est_model_MCPanel$msk_err <- (est_model_MCPanel$Mhat - Y_sub)*(1-treat_mat)
     est_model_MCPanel$test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_MCPanel$msk_err^2))
     MCPanel_RMSE_test[i,j] <- est_model_MCPanel$test_RMSE
+    
     ## -----
     ## EN : It does Not cross validate on alpha (only on lambda) and keep alpha = 1 (LASSO).
     ##      Change num_alpha to a larger number, if you are willing to wait a little longer.
     ## -----
-    
+    print("EN Started")
     est_model_EN <- en_mp_rows(Y_obs, treat_mat, num_alpha = 1)
     est_model_EN_msk_err <- (est_model_EN - Y_sub)*(1-treat_mat)
     est_model_EN_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_EN_msk_err^2))
@@ -83,6 +83,7 @@ for(i in c(1:num_runs)){
     ## EN_T : It does Not cross validate on alpha (only on lambda) and keep alpha = 1 (LASSO).
     ##        Change num_alpha to a larger number, if you are willing to wait a little longer.
     ## -----
+    print("EN-T Started")
     est_model_ENT <- t(en_mp_rows(t(Y_obs), t(treat_mat), num_alpha = 1))
     est_model_ENT_msk_err <- (est_model_ENT - Y_sub)*(1-treat_mat)
     est_model_ENT_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_ENT_msk_err^2))
@@ -91,7 +92,7 @@ for(i in c(1:num_runs)){
     ## -----
     ## DID
     ## -----
-    
+    print("DID Started")
     est_model_DID <- DID(Y_obs, treat_mat)
     est_model_DID_msk_err <- (est_model_DID - Y_sub)*(1-treat_mat)
     est_model_DID_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_DID_msk_err^2))
@@ -100,12 +101,11 @@ for(i in c(1:num_runs)){
     ## -----
     ## ADH
     ## -----
-    if(to_run_adh == 1){
-      est_model_ADH <- adh_mp_rows(Y_obs, treat_mat)
-      est_model_ADH_msk_err <- (est_model_ADH - Y_sub)*(1-treat_mat)
-      est_model_ADH_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_ADH_msk_err^2))
-      ADH_RMSE_test[i,j] <- est_model_ADH_test_RMSE
-    }
+    print("ADH Started")
+    est_model_ADH <- adh_mp_rows(Y_obs, treat_mat)
+    est_model_ADH_msk_err <- (est_model_ADH - Y_sub)*(1-treat_mat)
+    est_model_ADH_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_ADH_msk_err^2))
+    ADH_RMSE_test[i,j] <- est_model_ADH_test_RMSE
   }
 }
 
@@ -122,65 +122,64 @@ ENT_std_error <- apply(ENT_RMSE_test,2,sd)/sqrt(num_runs)
 DID_avg_RMSE <- apply(DID_RMSE_test,2,mean)
 DID_std_error <- apply(DID_RMSE_test,2,sd)/sqrt(num_runs)
 
-if(to_run_adh == 1){
-  ADH_avg_RMSE <- apply(ADH_RMSE_test,2,mean)
-  ADH_std_error <- apply(ADH_RMSE_test,2,sd)/sqrt(num_runs)
-}
+ADH_avg_RMSE <- apply(ADH_RMSE_test,2,mean)
+ADH_std_error <- apply(ADH_RMSE_test,2,sd)/sqrt(num_runs)
 
 ## Creating plots
 
-if(to_run_adh == 1){
-  df1 <-
-    structure(
-      list(
-        y =  c(MCPanel_avg_RMSE, EN_avg_RMSE, ADH_avg_RMSE, DID_avg_RMSE, ENT_avg_RMSE),
-        lb = c(MCPanel_avg_RMSE - 1.96*MCPanel_std_error, EN_avg_RMSE - 1.96*EN_std_error,
-               ADH_avg_RMSE - 1.96*ADH_std_error, DID_avg_RMSE - 1.96*DID_std_error,
-               ENT_avg_RMSE - 1.96*ENT_std_error),
-        ub = c(MCPanel_avg_RMSE + 1.96*MCPanel_std_error, EN_avg_RMSE + 1.96*EN_std_error,
-               ADH_avg_RMSE + 1.96*ADH_std_error, DID_avg_RMSE + 1.96*DID_std_error,
-               ENT_avg_RMSE + 1.96*ENT_std_error),
-        x = c(T0/T, T0/T ,T0/T, T0/T, T0/T),
-        Method = c(replicate(length(T0),"MC-NNM"), replicate(length(T0),"EN"),
-                   replicate(length(T0),"SC-ADH"), replicate(length(T0),"DID"), 
-                   replicate(length(T0),"EN-T"))
-      ),
-      .Names = c("y", "lb", "ub", "x", "Method"),
-      row.names = c(NA,-10L),
-      class = "data.frame"
-    )
-} else{
-  df1 <-
-    structure(
-      list(
-        y =  c(MCPanel_avg_RMSE, EN_avg_RMSE, DID_avg_RMSE, ENT_avg_RMSE),
-        lb = c(MCPanel_avg_RMSE - 1.96*MCPanel_std_error, EN_avg_RMSE - 1.96*EN_std_error,
-               DID_avg_RMSE - 1.96*DID_std_error, ENT_avg_RMSE - 1.96*ENT_std_error),
-        ub = c(MCPanel_avg_RMSE + 1.96*MCPanel_std_error, EN_avg_RMSE + 1.96*EN_std_error,
-               DID_avg_RMSE + 1.96*DID_std_error, ENT_avg_RMSE + 1.96*ENT_std_error),
-        x = c(T0/T, T0/T ,T0/T, T0/T),
-        Method = c(replicate(length(T0),"MC-NNM"), replicate(length(T0),"EN"),
-                  replicate(length(T0),"DID"), replicate(length(T0),"EN-T"))
-      ),
-      .Names = c("y", "lb", "ub", "x", "Method"),
-      row.names = c(NA,-8L),
-      class = "data.frame"
-    )
-}
+df1 <-
+  structure(
+    list(
+      y =  c(DID_avg_RMSE, EN_avg_RMSE, ENT_avg_RMSE, MCPanel_avg_RMSE, ADH_avg_RMSE),
+      lb = c(DID_avg_RMSE - 1.96*DID_std_error, EN_avg_RMSE - 1.96*EN_std_error,
+             ENT_avg_RMSE - 1.96*ENT_std_error, MCPanel_avg_RMSE - 1.96*MCPanel_std_error,
+             ADH_avg_RMSE - 1.96*ADH_std_error),
+      ub = c(DID_avg_RMSE + 1.96*DID_std_error, EN_avg_RMSE + 1.96*EN_std_error,
+             ENT_avg_RMSE + 1.96*ENT_std_error, MCPanel_avg_RMSE + 1.96*MCPanel_std_error,
+             ADH_avg_RMSE + 1.96*ADH_std_error),
+      x = c(T0/T, T0/T ,T0/T, T0/T, T0/T),
+      Method = c(replicate(length(T0),"DID"), replicate(length(T0),"EN"),
+                 replicate(length(T0),"EN-T"), replicate(length(T0),"MC-NNM"), 
+                 replicate(length(T0),"SC-ADH")),
+      Marker = c(replicate(length(T0),1), replicate(length(T0),2),
+                 replicate(length(T0),3), replicate(length(T0),4),
+                 replicate(length(T0),5))
+      
+    ),
+    .Names = c("y", "lb", "ub", "x", "Method", "Marker"),
+    row.names = c(NA,-10L),
+    class = "data.frame"
+  )
 
-p = ggplot(data = df1, aes(x, y, color = Method)) +
-    geom_point(size = 2, position=position_dodge(width=0.1)) +
-    geom_errorbar(
+Marker = c(1,2,3,4,5)
+
+
+p = ggplot(data = df1, aes(x, y, color = Method, shape=Marker)) +
+  geom_point(size = 2, position=position_dodge(width=0.1)) +
+  geom_errorbar(
     aes(ymin = lb, ymax = ub),
     width = 0.1,
     linetype = "solid",
     position=position_dodge(width=0.1)) +
-    theme_bw() + xlab(TeX('$T_0/T$')) + ylab("Average RMSE") + ylim(0.02,0.05)
+  scale_shape_identity() +
+  guides(color = guide_legend(override.aes = list(shape = Marker))) +
+  theme_bw() + 
+  xlab(TeX('$T_0/T$')) + 
+  ylab("Average RMSE") + 
+  ylim(0.015,0.06)
 
 print(p)
-
 ##
-if(is_save == 1){
-  filename<-paste0(paste0(paste0(paste0(paste0("stock_data_N_", N),"_T_", T),"_numruns_", num_runs), "_num_treated_", N_t), "_simultaneuous_", is_simul)
+if(to_save == 1){
+  filename<-paste0(paste0(paste0(paste0(paste0(paste0("stock_data_N_", N),"_T_", T),"_numruns_", num_runs), "_num_treated_", N_t), "_simultaneuous_", is_simul),".png")
   ggsave(filename, plot = last_plot(), device="png", dpi=600)
+  df2<-data.frame(N,T,N_t,is_simul, DID_RMSE_test, EN_RMSE_test, ENT_RMSE_test, MCPanel_RMSE_test, ADH_RMSE_test)
+  colnames(df2)<-c("N", "T", "N_t", "is_simul", replicate(length(T0), "DID"), 
+                   replicate(length(T0), "EN"), replicate(length(T0), "ENT"), 
+                   replicate(length(T0), "MC-NNM"), replicate(length(T0),"SC-ADH"))
+  
+  filename<-paste0(paste0(paste0(paste0(paste0(paste0("stock_data_N_", N),"_T_", T),"_numruns_", num_runs), "_num_treated_", N_t), "_simultaneuous_", is_simul),".rds")
+  save(df1, df2, file = filename)
 }
+
+
