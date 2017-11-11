@@ -20,10 +20,10 @@ mask <- matrix(rbinom(N*T,1,fr_obs),N,T)
 obs_mat <- noisy_mat * mask
 
 ## Estimate using mcnnm_cv (cross-validation) on lambda values
-model_without_effects <- mcnnm_cv(obs_mat,mask)
-model_with_delta <- mcnnm_cv(obs_mat, mask, 1, 0) ##third and fourth parameter respectively are whether
-model_with_gamma <- mcnnm_cv(obs_mat, mask, 0, 1) ##to estimate delta(u) or gamma(v)
-model_with_both <- mcnnm_cv(obs_mat, mask, 1, 1)
+model_without_effects <- mcnnm_cv(obs_mat, mask, to_estimate_u = 0, to_estimate_v = 0)
+model_with_delta <- mcnnm_cv(obs_mat, mask, to_estimate_u = 1, to_estimate_v = 0) ##third and fourth parameter respectively are whether
+model_with_gamma <- mcnnm_cv(obs_mat, mask, to_estimate_u = 0, to_estimate_v = 1) ##to estimate delta(u) or gamma(v)
+model_with_both <- mcnnm_cv(obs_mat, mask, to_estimate_u = 1, to_estimate_v = 1)
 
 ## Check criteria
 sum(model_without_effects$u == 0) == N ## Checking if row-wise effects are zero
