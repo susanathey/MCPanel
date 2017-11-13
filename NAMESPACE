@@ -2,6 +2,8 @@ exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 useDynLib(MCPanel)
 
+export(aux, ADH, EN, DID)
+
 importFrom(latex2exp, TeX)
 importFrom(glmnet, glmnet, cv.glmnet)
 importFrom(ggplot2, ggplot)
