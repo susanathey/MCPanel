@@ -1531,9 +1531,10 @@ List mcnnm_fit(NumericMatrix M, NumericMatrix mask, double lambda_L, bool to_est
     NumericVector lambda_Ls(1);
     lambda_Ls(0) = lambda_L;
     List Q = NNM(M, mask, 1, lambda_Ls, to_estimate_u, to_estimate_v, niter, rel_tol, is_quiet);
-    return List::create(Named("L") = Q["L"],
-                        Named("u") = Q["u"],
-                        Named("v") = Q["v"],
+    List final_config = Q[0];
+    return List::create(Named("L") = final_config["L"],
+                        Named("u") = final_config["u"],
+                        Named("v") = final_config["v"],
                         Named("lambda_L") = lambda_L);
   }
   else{
