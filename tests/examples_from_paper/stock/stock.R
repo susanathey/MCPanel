@@ -3,10 +3,10 @@ rm(list=ls())
 ## Loading Source files
 setwd("./MCPanel/tests/") ## Change it to your local directory
 
-source("EN.R")
-source("DID.R")
-source("aux.R")
-source("ADH.R")
+#source("EN.R")
+#source("DID.R")
+#source("aux.R")
+#source("ADH.R")
 library(MCPanel)
 library(latex2exp)
 library(glmnet)
