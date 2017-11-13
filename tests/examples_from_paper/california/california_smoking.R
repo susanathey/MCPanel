@@ -7,10 +7,10 @@ library(Synth)
 library(MCPanel)
 library(ggplot2)
 library(latex2exp)
-source("EN.R")
-source("DID.R")
-source("aux.R")
-source("ADH.R")
+#source("EN.R")
+#source("DID.R")
+#source("aux.R")
+#source("ADH.R")
 
 
 ## Reading data
