@@ -1,7 +1,7 @@
 rm(list=ls())
 
 ## Loading Source files
-## setwd("/Users/khosravi/atom/OnlinePackage/MCPanel/tests/")
+setwd("./MCPanel/tests/")
 library(glmnet)
 library(Synth)
 library(MCPanel)
