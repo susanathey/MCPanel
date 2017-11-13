@@ -1097,7 +1097,6 @@ List NNM(NumericMatrix M, NumericMatrix mask, int num_lam_L = 100, NumericVector
   else{
     tmp_res = NNM_with_uv_init(M, mask, wrap(VectorXd::Zero(M_.rows())), wrap(VectorXd::Zero(M_.cols())), to_estimate_u, to_estimate_v, lambda_L, niter, rel_tol, is_quiet);
   }
-  if()
   List out(num_lam_L);
   for (int i = 0; i < num_lam_L; i++){
     int current_ind = i;
