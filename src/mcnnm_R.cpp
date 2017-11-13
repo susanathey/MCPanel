@@ -25,7 +25,7 @@ List MySVD(NumericMatrix M){
   using Eigen::Map;
   const Map<MatrixXd> M_(as<Map<MatrixXd> >(M));
 
-  BDCSVD<MatrixXd> svd( M_.rows(), M_.cols(), ComputeThinV | ComputeThinU );
+  JacobiSVD<MatrixXd> svd( M_.rows(), M_.cols(), ComputeThinV | ComputeThinU );
   svd.compute(M_);
   VectorXd sing = svd.singularValues();
   MatrixXd U = svd.matrixU();
@@ -515,7 +515,7 @@ List initialize_uv(NumericMatrix M, NumericMatrix mask, bool to_estimate_u, bool
   const Map<MatrixXd> M_(as<Map<MatrixXd> >(M));
   const Map<MatrixXd> mask_(as<Map<MatrixXd> >(mask));
 
-  BDCSVD<MatrixXd> svd(M_.rows(), M_.cols());
+  JacobiSVD<MatrixXd> svd(M_.rows(), M_.cols());
   double obj_val=0;
   double new_obj_val=0;
   int num_rows = M_.rows();
@@ -589,7 +589,7 @@ List initialize_uv_H(NumericMatrix M, NumericMatrix X, NumericMatrix Z, NumericM
     NumericMatrix Xp = wrap(Xfin);
     NumericMatrix Zp = wrap(Zfin);
 
-    BDCSVD<MatrixXd> svd(M_.rows(), M_.cols());
+    JacobiSVD<MatrixXd> svd(M_.rows(), M_.cols());
     double obj_val=0;
     double new_obj_val=0;
     VectorXd u_ = VectorXd::Zero(num_rows);
