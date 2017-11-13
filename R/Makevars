@@ -1,0 +1,2 @@
+CXX = g++-4.8.1
+PKG_CXXFLAGS = -std=c++11
