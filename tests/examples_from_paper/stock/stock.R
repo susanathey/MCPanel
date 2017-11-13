@@ -7,7 +7,7 @@ setwd("./MCPanel/tests/") ## Change it to your local directory
 #source("DID.R")
 #source("aux.R")
 #source("ADH.R")
-library(MCPanel)
+#library(MCPanel)
 library(latex2exp)
 library(glmnet)
 library(ggplot2)
@@ -17,7 +17,7 @@ setwd("./examples_from_paper/stock/")
 Y <- t(read.csv('./returns_no_missing.csv',header=F))
 
 #save(list=c("Y"),file="stocks.RData") # It is better to save data for faster loading
-#load(file="stocks.RData") 
+#load(file="stocks.RData")
 
 ## Setting up the configuration
 Nbig <- nrow(Y)
@@ -52,13 +52,13 @@ for(i in c(1:num_runs)){
     t0 <- T0[j]
     ## Simultaneuous (simul_adapt) or Staggered adoption (stag_adapt)
     if(is_simul == 1){
-      treat_mat <- simul_adapt(Y_sub, N_t, t0, treat_indices)    
+      treat_mat <- simul_adapt(Y_sub, N_t, t0, treat_indices)
     }
     else{
       treat_mat <- stag_adapt(Y_sub, N_t, t0, treat_indices)
     }
     Y_obs <- Y_sub * treat_mat
-    
+
     ## ------
     ## MC-NNM
     ## ------
@@ -68,7 +68,7 @@ for(i in c(1:num_runs)){
     est_model_MCPanel$msk_err <- (est_model_MCPanel$Mhat - Y_sub)*(1-treat_mat)
     est_model_MCPanel$test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_MCPanel$msk_err^2))
     MCPanel_RMSE_test[i,j] <- est_model_MCPanel$test_RMSE
-    
+
     ## -----
     ## EN : It does Not cross validate on alpha (only on lambda) and keep alpha = 1 (LASSO).
     ##      Change num_alpha to a larger number, if you are willing to wait a little longer.
@@ -78,7 +78,7 @@ for(i in c(1:num_runs)){
     est_model_EN_msk_err <- (est_model_EN - Y_sub)*(1-treat_mat)
     est_model_EN_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_EN_msk_err^2))
     EN_RMSE_test[i,j] <- est_model_EN_test_RMSE
-    
+
     ## -----
     ## EN_T : It does Not cross validate on alpha (only on lambda) and keep alpha = 1 (LASSO).
     ##        Change num_alpha to a larger number, if you are willing to wait a little longer.
@@ -88,7 +88,7 @@ for(i in c(1:num_runs)){
     est_model_ENT_msk_err <- (est_model_ENT - Y_sub)*(1-treat_mat)
     est_model_ENT_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_ENT_msk_err^2))
     ENT_RMSE_test[i,j] <- est_model_ENT_test_RMSE
-    
+
     ## -----
     ## DID
     ## -----
@@ -97,7 +97,7 @@ for(i in c(1:num_runs)){
     est_model_DID_msk_err <- (est_model_DID - Y_sub)*(1-treat_mat)
     est_model_DID_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_DID_msk_err^2))
     DID_RMSE_test[i,j] <- est_model_DID_test_RMSE
-    
+
     ## -----
     ## ADH
     ## -----
@@ -139,12 +139,12 @@ df1 <-
              ADH_avg_RMSE + 1.96*ADH_std_error),
       x = c(T0/T, T0/T ,T0/T, T0/T, T0/T),
       Method = c(replicate(length(T0),"DID"), replicate(length(T0),"EN"),
-                 replicate(length(T0),"EN-T"), replicate(length(T0),"MC-NNM"), 
+                 replicate(length(T0),"EN-T"), replicate(length(T0),"MC-NNM"),
                  replicate(length(T0),"SC-ADH")),
       Marker = c(replicate(length(T0),1), replicate(length(T0),2),
                  replicate(length(T0),3), replicate(length(T0),4),
                  replicate(length(T0),5))
-      
+
     ),
     .Names = c("y", "lb", "ub", "x", "Method", "Marker"),
     row.names = c(NA,-10L),
@@ -163,9 +163,9 @@ p = ggplot(data = df1, aes(x, y, color = Method, shape=Marker)) +
     position=position_dodge(width=0.1)) +
   scale_shape_identity() +
   guides(color = guide_legend(override.aes = list(shape = Marker))) +
-  theme_bw() + 
-  xlab(TeX('$T_0/T$')) + 
-  ylab("Average RMSE") + 
+  theme_bw() +
+  xlab(TeX('$T_0/T$')) +
+  ylab("Average RMSE") +
   ylim(0.015,0.06)
 
 print(p)
@@ -174,10 +174,10 @@ if(to_save == 1){
   filename<-paste0(paste0(paste0(paste0(paste0(paste0("stock_data_N_", N),"_T_", T),"_numruns_", num_runs), "_num_treated_", N_t), "_simultaneuous_", is_simul),".png")
   ggsave(filename, plot = last_plot(), device="png", dpi=600)
   df2<-data.frame(N,T,N_t,is_simul, DID_RMSE_test, EN_RMSE_test, ENT_RMSE_test, MCPanel_RMSE_test, ADH_RMSE_test)
-  colnames(df2)<-c("N", "T", "N_t", "is_simul", replicate(length(T0), "DID"), 
-                   replicate(length(T0), "EN"), replicate(length(T0), "ENT"), 
+  colnames(df2)<-c("N", "T", "N_t", "is_simul", replicate(length(T0), "DID"),
+                   replicate(length(T0), "EN"), replicate(length(T0), "ENT"),
                    replicate(length(T0), "MC-NNM"), replicate(length(T0),"SC-ADH"))
-  
+
   filename<-paste0(paste0(paste0(paste0(paste0(paste0("stock_data_N_", N),"_T_", T),"_numruns_", num_runs), "_num_treated_", N_t), "_simultaneuous_", is_simul),".rds")
   save(df1, df2, file = filename)
 }

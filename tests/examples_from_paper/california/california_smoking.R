@@ -3,7 +3,7 @@ rm(list=ls())
 ## Loading Source files
 setwd("./MCPanel/tests/")
 library(glmnet)
-library(Synth)
+#library(Synth)
 library(MCPanel)
 library(ggplot2)
 library(latex2exp)
@@ -63,27 +63,27 @@ for(i in c(1:num_runs)){
       treat_mat <- stag_adapt(Y, N_t, t0, treat_indices)
     }
     Y_obs <- Y * treat_mat
-    
+
     ## ------
     ## MC-NNM
     ## ------
-    
+
     est_model_MCPanel <- mcnnm_cv(Y_obs, treat_mat, to_estimate_u = 1, to_estimate_v = 1)
     est_model_MCPanel$Mhat <- est_model_MCPanel$L + replicate(T,est_model_MCPanel$u) + t(replicate(N,est_model_MCPanel$v))
     est_model_MCPanel$msk_err <- (est_model_MCPanel$Mhat - Y)*(1-treat_mat)
     est_model_MCPanel$test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_MCPanel$msk_err^2))
     MCPanel_RMSE_test[i,j] <- est_model_MCPanel$test_RMSE
-    
+
     ## -----
     ## EN : It does Not cross validate on alpha (only on lambda) and keep alpha = 1 (LASSO).
     ##      Change num_alpha to a larger number, if you are willing to wait a little longer.
     ## -----
-    
+
     est_model_EN <- en_mp_rows(Y_obs, treat_mat, num_alpha = 1)
     est_model_EN_msk_err <- (est_model_EN - Y)*(1-treat_mat)
     est_model_EN_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_EN_msk_err^2))
     EN_RMSE_test[i,j] <- est_model_EN_test_RMSE
-    
+
     ## -----
     ## EN_T : It does Not cross validate on alpha (only on lambda) and keep alpha = 1 (LASSO).
     ##        Change num_alpha to a larger number, if you are willing to wait a little longer.
@@ -92,16 +92,16 @@ for(i in c(1:num_runs)){
     est_model_ENT_msk_err <- (est_model_ENT - Y)*(1-treat_mat)
     est_model_ENT_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_ENT_msk_err^2))
     ENT_RMSE_test[i,j] <- est_model_ENT_test_RMSE
-    
+
     ## -----
     ## DID
     ## -----
-    
+
     est_model_DID <- DID(Y_obs, treat_mat)
     est_model_DID_msk_err <- (est_model_DID - Y)*(1-treat_mat)
     est_model_DID_test_RMSE <- sqrt((1/sum(1-treat_mat)) * sum(est_model_DID_msk_err^2))
     DID_RMSE_test[i,j] <- est_model_DID_test_RMSE
-    
+
     ## -----
     ## ADH
     ## -----
@@ -142,12 +142,12 @@ df1 <-
              ADH_avg_RMSE + 1.96*ADH_std_error),
       x = c(T0/T, T0/T ,T0/T, T0/T, T0/T),
       Method = c(replicate(length(T0),"DID"), replicate(length(T0),"EN"),
-                 replicate(length(T0),"EN-T"), replicate(length(T0),"MC-NNM"), 
+                 replicate(length(T0),"EN-T"), replicate(length(T0),"MC-NNM"),
                  replicate(length(T0),"SC-ADH")),
       Marker = c(replicate(length(T0),1), replicate(length(T0),2),
                  replicate(length(T0),3), replicate(length(T0),4),
                  replicate(length(T0),5))
-      
+
     ),
     .Names = c("y", "lb", "ub", "x", "Method", "Marker"),
     row.names = c(NA,-25L),
@@ -166,9 +166,9 @@ p = ggplot(data = df1, aes(x, y, color = Method, shape = Marker)) +
     position=position_dodge(width=0.1)) +
   scale_shape_identity() +
   guides(color = guide_legend(override.aes = list(shape = Marker))) +
-  theme_bw() + 
-  xlab(TeX('$T_0/T$')) + 
-  ylab("Average RMSE") + 
+  theme_bw() +
+  xlab(TeX('$T_0/T$')) +
+  ylab("Average RMSE") +
   ylim(5,50)
 
 print(p)
@@ -178,10 +178,10 @@ if(to_save == 1){
   filename<-paste0(paste0(paste0(paste0(paste0(paste0("california_data_N_", N),"_T_", T),"_numruns_", num_runs), "_num_treated_", N_t), "_simultaneuous_", is_simul),".png")
   ggsave(filename, plot = last_plot(), device="png", dpi=600)
   df2<-data.frame(N,T,N_t,is_simul, DID_RMSE_test, EN_RMSE_test, ENT_RMSE_test, MCPanel_RMSE_test, ADH_RMSE_test)
-  colnames(df2)<-c("N", "T", "N_t", "is_simul", replicate(length(T0), "DID"), 
-                   replicate(length(T0), "EN"), replicate(length(T0), "ENT"), 
+  colnames(df2)<-c("N", "T", "N_t", "is_simul", replicate(length(T0), "DID"),
+                   replicate(length(T0), "EN"), replicate(length(T0), "ENT"),
                    replicate(length(T0), "MC-NNM"), replicate(length(T0),"SC-ADH"))
-  
+
   filename<-paste0(paste0(paste0(paste0(paste0(paste0("california_data_N_", N),"_T_", T),"_numruns_", num_runs), "_num_treated_", N_t), "_simultaneuous_", is_simul),".rds")
   save(df1, df2, file = filename)
 }
