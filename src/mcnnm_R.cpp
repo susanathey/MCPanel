@@ -1097,6 +1097,7 @@ List NNM(NumericMatrix M, NumericMatrix mask, int num_lam_L = 100, NumericVector
   else{
     tmp_res = NNM_with_uv_init(M, mask, wrap(VectorXd::Zero(M_.rows())), wrap(VectorXd::Zero(M_.cols())), to_estimate_u, to_estimate_v, lambda_L, niter, rel_tol, is_quiet);
   }
+  if()
   List out(num_lam_L);
   for (int i = 0; i < num_lam_L; i++){
     int current_ind = i;
@@ -1530,7 +1531,11 @@ List mcnnm_fit(NumericMatrix M, NumericMatrix mask, double lambda_L, bool to_est
   if(lambda_L >= max_lam_L){
     NumericVector lambda_Ls(1);
     lambda_Ls(0) = lambda_L;
-    return NNM(M, mask, 1, lambda_Ls, to_estimate_u, to_estimate_v, niter, rel_tol, is_quiet);
+    List Q = NNM(M, mask, 1, lambda_Ls, to_estimate_u, to_estimate_v, niter, rel_tol, is_quiet);
+    return List::create(Named("L") = Q["L"],
+                        Named("u") = Q["u"],
+                        Named("v") = Q["v"],
+                        Named("lambda_L") = lambda_L);
   }
   else{
     int num_lam_L = 100;

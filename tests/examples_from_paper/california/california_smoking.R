@@ -1,16 +1,10 @@
 rm(list=ls())
 
 ## Loading Source files
-setwd("./MCPanel/tests/")
-library(glmnet)
-#library(Synth)
 library(MCPanel)
+library(glmnet)
 library(ggplot2)
 library(latex2exp)
-#source("EN.R")
-#source("DID.R")
-#source("aux.R")
-#source("ADH.R")
 
 
 ## Reading data
