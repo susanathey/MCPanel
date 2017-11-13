@@ -1,7 +1,7 @@
 rm(list=ls())
 
 ## Loading Source files
-setwd("/Users/khosravi/atom/OnlinePackage/MCPanel/tests/") ## Change it to your local directory
+setwd("./MCPanel/tests/") ## Change it to your local directory
 
 source("EN.R")
 source("DID.R")
