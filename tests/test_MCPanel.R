@@ -1,4 +1,4 @@
-#library(MCPanel)
+library(MCPanel)
 
 N <- 100 # Number of units
 T <- 100 # Number of time-periods

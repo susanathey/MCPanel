@@ -1,5 +1,5 @@
 importFrom(Rcpp, evalCpp)
-useDynLib(MCpanel)
+useDynLib(MCPanel)
 
 export(mcnnm, mcnnm_cv, mcnnm_fit, mcnnm_lam_range, mcnnm_wc, mcnnm_wc_cv, mcnnm_wc_fit, mcnnm_wc_lam_range,  en_mp_rows, DID, adh_mp_rows, stag_adapt, simul_adapt)
 
