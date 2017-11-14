@@ -27,9 +27,9 @@ N <- nrow(treat)
 T <- ncol(treat)
 number_T0 = 5
 T0 <- ceiling(T*((1:number_T0)*2-1)/(2*number_T0))
-N_t <- 8
+N_t <- 35
 num_runs <- 10
-is_simul <- 1 ## Whether to simulate Simultaneus Adoption or Staggered Adoption
+is_simul <- 0 ## Whether to simulate Simultaneus Adoption or Staggered Adoption
 to_save <- 1 ## Whether to save the plot or not
 
 ## Matrices for saving RMSE values
@@ -163,8 +163,11 @@ p = ggplot(data = df1, aes(x, y, color = Method, shape = Marker)) +
   theme_bw() +
   xlab(TeX('$T_0/T$')) +
   ylab("Average RMSE") +
-  coord_cartesian(ylim=c(5, 50))
-
+  coord_cartesian(ylim=c(5, 50)) +
+  theme(axis.title=element_text(family="Times", size=14)) +
+  theme(axis.text=element_text(family="Times", size=12)) +
+  theme(legend.text=element_text(family="Times", size = 12)) +
+  theme(legend.title=element_text(family="Times", size = 12))
 print(p)
 
 ##

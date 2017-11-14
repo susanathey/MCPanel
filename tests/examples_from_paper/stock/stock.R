@@ -162,7 +162,11 @@ p = ggplot(data = df1, aes(x, y, color = Method, shape=Marker)) +
   theme_bw() +
   xlab(TeX('$T_0/T$')) +
   ylab("Average RMSE") +
-  coord_cartesian(ylim=c(0.015, 0.035))
+  coord_cartesian(ylim=c(0.02, 0.06)) +
+  theme(axis.title=element_text(family="Times", size=14)) +
+  theme(axis.text=element_text(family="Times", size=12)) +
+  theme(legend.text=element_text(family="Times", size = 12)) +
+  theme(legend.title=element_text(family="Times", size = 12))
 
 print(p)
 ##
