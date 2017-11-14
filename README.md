@@ -25,4 +25,4 @@ estimated_mat <- estimated_obj$L
 More details will be added soon.
 
 #### References
-Susan Athey, Mohsen Bayati, Nikolay Doudchenko, Guido Imbens, and Khashayar Khosravi. <b>Matrix Completion Methods for Causal Panel Data Models</b> [<a href=https://arxiv.org/abs/1710.10251">link</a>]
+Susan Athey, Mohsen Bayati, Nikolay Doudchenko, Guido Imbens, and Khashayar Khosravi. <b>Matrix Completion Methods for Causal Panel Data Models</b> [<a href="http://arxiv.org/abs/1710.10251">link</a>]
