@@ -7,6 +7,7 @@ To install this package in R, run the following commands:
 
 ```R
 install.packages("devtools")
+install.packages("latex2exp")
 library(devtools) 
 install_github("susanathey/MCPanel")
 ```
