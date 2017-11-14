@@ -1,8 +1,8 @@
 library(MCPanel)
 
-N <- 100 # Number of units
-T <- 100 # Number of time-periods
-R <- 5 # Rank of matrix
+N <- 20 # Number of units
+T <- 20 # Number of time-periods
+R <- 2 # Rank of matrix
 noise_sc <- 0.1 # Noise scale
 delta_sc <- 0.1 # delta scale
 gamma_sc <- 0.1 # gamma scale
