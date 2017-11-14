@@ -24,6 +24,6 @@ Description: Given any matrix which some of its entries are missing, it is impor
 	functions to accomplish this task effectively.
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.13), RcppEigen, ggplots2, glmnet, latex2exp
+Imports: Rcpp (>= 0.12.13), RcppEigen, ggplot2, glmnet, latex2exp
 LinkingTo: Rcpp, RcppEigen
 License: GPL-2
