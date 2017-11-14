@@ -1,8 +1,22 @@
 Package: MCPanel
 Type: Package
-Title: Matrix Completion algorithms for Causal Panel Data
-Version: 0.1.0
-Author: Khashayar Khosravi
+Title: Matrix Completion algorithms for Causal Panel Data Models
+Version: 0.0
+Authors@R: c(person("Susan", "Athey", role = "aut",
+                      email = "athey@susanathey.com"),
+              person("Mohsen", "Bayati", role = "aut",
+	      	      email = "bayati@stanford.edu"),
+	      person("Nikolay", "Doudchenko", role = "aut",
+	      	      email = "nikolay.doudchenko@stanford.edu"),
+	      person("Guido", "Imbens", role = "aut",
+	      	      email = "imbens@stanford.edu")
+              person("Khashayar", "Khosravi", role = c("aut", "cre"),
+                     email = "khosravi@stanford.edu"))
+Author: Susan Athey [aut],
+ 	Mohsen Bayati [aut],
+        Nikolay Doudchenko [aut],
+	Guido Imbens [aut],
+	Khashayar Khosravi [aut, cre]
 Maintainer: Khashayar Khosravi <khosravi@stanford.edu>
 Description: Given any matrix which some of its entries are missing, it is important
 	to recover (estimate) missing entries. Inference questions usually can be only
