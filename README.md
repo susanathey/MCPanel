@@ -16,7 +16,7 @@ Example usage:
 
 ```R
 library(MCPanel)
-estimated_obj <- mcnnm.cv(M, mask, to_estimate_u = 0, to_estimate_v = 0, num_lam_L = 40)
+estimated_obj <- mcnnm_cv(M, mask, to_estimate_u = 0, to_estimate_v = 0, num_lam_L = 40)
                   
 best_lam_L <- estimated_obj$best_lambda
 estimated_mat <- estimated_obj$L
