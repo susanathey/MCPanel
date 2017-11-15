@@ -1,3 +1,10 @@
+#' Difference-in-Difference Estimator when multiple units are missing.
+
+#' @param M Matrix of observed entries. The input should be N (number of units) by T (number of time periods).
+#' @param mask Binary mask with the same shape as M containing observed entries.
+#' @return The matrix with all missing entries filled.
+#' @examples
+#' DID(matrix(c(1,2,3,4),2,2), matrix(c(1,1,1,0),2,2))
 DID <- function( M, mask ){
   M <- M * mask
   treated_rows <- which(rowMeans(mask) < 1)

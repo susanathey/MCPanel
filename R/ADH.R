@@ -1,3 +1,18 @@
+#' Computing Synthetic Control Estimator when multiple units are missing.
+#' The underlying algorithm is Mirror Descent with Entropy Regularizer.
+#' This algorithm is also known as exponentiated gradient descent.
+#' It is worth noting that this estimator was proposed by Abadie et. al and
+#' the reason of new implementation here is to compare methods on some datasets.
+#' 
+#' @param M Matrix of observed entries. The input should be N (number of units) by T (number of time periods).
+#' @param mask Binary mask with the same shape as M containing observed entries.
+#' @param niter Optional parameter on the number of iterations taken in the algorithm. The default value is 10000 and if the number of treated units are large for speed consideration will be reduced to 200.
+#' @param rel_tol Optional parameter on the stopping rule. Once the relative improve in objective value drops below rel_tol, execution is halted. Default value is 1e-8. 
+#' @return The matrix with all missing entries filled.
+#' @seealso The R package called \code{\link[Synth]{synth}}, written by Alberto Abadie, Alexis Diamond, and Jens Hainmueller.
+#' @examples
+#' adh_mp_rows(matrix(c(1,2,3,4),2,2), matrix(c(1,1,1,0),2,2))
+
 adh_mp_rows <- function(M, mask, niter = 10000, rel_tol=1e-8){
   M <- M * mask
   treated_rows <- which(rowMeans(mask) < 1)

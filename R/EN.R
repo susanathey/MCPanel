@@ -22,6 +22,20 @@ en_predict <- function(M, mask, best_lam, best_alpha){
   return(M_pred)
 }
 
+#' Computing Elastic Net Estimator when multiple units are missing.
+#' The underlying algorithm is glmnet package in R.
+#' It is worth noting that this package was written by Friedman et. al.
+#' 
+#' @param M Matrix of observed entries. The input should be N (number of units) by T (number of time periods).
+#' @param mask Binary mask with the same shape as M containing observed entries.
+#' @param num_folds Optional parameter on the number of folds for cross-validation. Default is 5.
+#' @param num_lam Optional parameter on the number of lambda values (weight penalties). Default is 100.
+#' @param num_alpha Optional parameter on the number of alpha values (shape parameter). Default is 40.
+#' @return The matrix with all missing entries filled.
+#' @seealso \code{\link[glmnet]{cv.glmnet}}, written by Jerome Friedman, Trevor Hastie, Noah Simon, Junyang Qian, and Rob Tibshirani
+#' @examples
+#' en_mp_rows(matrix(c(1,2,3,4),2,2), matrix(c(1,1,1,0),2,2))
+
 en_mp_rows <- function(M, mask, num_folds = 5, num_lam = 100L, num_alpha = 40L){
   M <- M * mask
   treated_rows <- which(rowMeans(mask) < 1)
