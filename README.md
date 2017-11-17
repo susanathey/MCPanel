@@ -22,6 +22,7 @@ best_lam_L <- estimated_obj$best_lambda
 estimated_mat <- estimated_obj$L
 
 ```
+Note: it may be necessary for Windows R 3.4.2 users to use the patched version of R: https://cran.r-project.org/bin/windows/base/rpatched.html
 
 More details will be added soon.
 
