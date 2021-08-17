@@ -11,7 +11,7 @@ DID <- function( M, mask ){
   control_rows <- setdiff(1:nrow(M), treated_rows)
   num_treated <- length(treated_rows)
   num_control <- length(control_rows)
-  M_control_rows <- M[control_rows,]
+  M_control_rows <- M[control_rows,, drop=FALSE]
   M_pred <- M
   for (l in 1:num_treated){
     tr_row_pred <- treated_rows[l]
